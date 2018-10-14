@@ -1,6 +1,19 @@
 <resources>
-    <string name="app_name">FixMyMorning</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
+    <string name="app_name">Fix My Morning</string>
+
+    <string name="setup_title">Edit Routine</string>
+
+    <string name="title_home">Title</string>
+    <string name="title_dashboard">Title</string>
+    <string name="title_notifications">Title</string>
+
+    <string-array name="priority_values">
+        <item>Lowest</item>
+        <item>Somewhat</item>
+        <item>Moderate</item>
+        <item>Important</item>
+        <item>Very Important</item>
+        <item>Absolutely Must</item>
+    </string-array>
+
 </resources>

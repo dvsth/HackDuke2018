@@ -1,4 +1,6 @@
-mport android.content.ContentValues;
+package com.tsquad.hackduke18.fixmymorning;
+
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -13,7 +15,7 @@ import java.io.PrintWriter;
 import static android.content.ContentValues.TAG;
 
 
-
+/*
 public class DayManager extends SQLiteOpenHelper {
 
 
@@ -131,3 +133,4 @@ public class DayManager extends SQLiteOpenHelper {
 
 
 }
+*/

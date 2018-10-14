@@ -1,4 +1,4 @@
-package devseth.questionnaire;
+package com.tsquad.hackduke18.fixmymorning;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -31,7 +31,7 @@ public class DBHandler extends SQLiteOpenHelper {
     private static final String UPPER = "UL";
     private static final String LOWER = "LL";
     private static final String PRIORITY = "Priority";
-    private static final String ORDER1= "Order";
+    private static final String ORDER1 = "Order";
     private static final String DATE = "Date";
 
 
@@ -79,21 +79,27 @@ public class DBHandler extends SQLiteOpenHelper {
     }
 
 
-        public Task[] getTask(SQLiteDatabase db)
-        {
+    public Task[] getTask(SQLiteDatabase db) {
 
-            Cursor cursor = db.query(TABLE_RESPONSES, null, null, null, null, null, null);
-            int i= 0;
-            Task[] array = new String[cursor.getCount()];
-            for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-                array[i] = new Task(cursor.getString(0), cursor.getString(1),cursor.getString(2),cursor.getString(3),cursor.getString(4),cursor.getString(5));
-                i++;
-
-            }
-
-            return array;
+        Cursor cursor = db.query(TABLE_RESPONSES, null, null, null, null, null, null);
+        int i = 0;
+        Task[] array = new Task[cursor.getCount()];
+        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
+            array[i] = new Task(
+                    cursor.getInt(0),
+                    cursor.getString(1),
+                    cursor.getFloat(2),
+                    cursor.getFloat(3),
+                    cursor.getFloat(4),
+                    cursor.getInt(5),
+                    cursor.getString(6));
+            i++;
 
         }
+
+        return array;
+
+    }
 
     public void addSurveyResponse(String[] inputResponses) {
 
@@ -103,7 +109,7 @@ public class DBHandler extends SQLiteOpenHelper {
         ContentValues values = new ContentValues();
         for (int i = 0; i < 6; i++) {
             values.put(QUESTION_ARRAY[i], inputResponses[i]);
-            
+
         }
 
         getWritableDatabase().insert(TABLE_RESPONSES, null, values);
@@ -111,3 +117,42 @@ public class DBHandler extends SQLiteOpenHelper {
         getWritableDatabase().close();
 
     }
+
+    public int updateTask(Task task) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(NAME, task.getName());
+        values.put(UPPER, task.getUpper());
+        values.put(LOWER, task.getLower());
+        values.put(PRIORITY, task.getPriority());
+        values.put(ORDER1, task.getOrder());
+        values.put(DATE, task.getDate());
+
+        // updating row
+        return db.update(TABLE_RESPONSES, values, KEY_ID + " = ?",
+                new String[]{String.valueOf(task.getId())});
+
+
+    }
+
+    public void deleteTask(Task task) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_RESPONSES, KEY_ID + " = ?",
+                new String[]{String.valueOf(task.getId())});
+        db.close();
+    }
+
+    public Task[] GetTasks() {
+        return getTask(database);
+    }
+
+    public Task GetTask(int id) {
+        Task[] tasks = getTask(database);
+        for (Task task : tasks) {
+            if (task.getId() == id) return task;
+        }
+        return null;
+    }
+
+}

@@ -21,7 +21,7 @@ public class Task implements Comparable<Task>{
         duration = lower;
     }
 
-    public int getID() {return ID;}
+    public int getId() {return ID;}
 
     public String getName() {
         return name;

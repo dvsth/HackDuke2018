@@ -1,3 +1,5 @@
+package com.tsquad.hackduke18.fixmymorning;
+
 public class Day {
     private int id;
     private String day;
