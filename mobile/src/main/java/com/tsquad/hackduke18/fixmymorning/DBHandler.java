@@ -12,7 +12,7 @@ import java.util.List;
 
 public class DBHandler extends SQLiteOpenHelper {
 
-    public static class Task {
+    public static class Task implements Comparable<Task>{
         public static final String TABLE_NAME = "Tasks";
         public static final String COLUMN_NAME_ID = "Id";
         public static final String COLUMN_NAME_DESCRIPTION = "Description";
@@ -37,6 +37,7 @@ public class DBHandler extends SQLiteOpenHelper {
         private double max_time;
         private int priority;
         private double order;
+        private double duration;
 
         public Task(long id, String description, double min_time, double max_time, int priority, double order) {
             this.id = id;
@@ -45,6 +46,7 @@ public class DBHandler extends SQLiteOpenHelper {
             this.max_time = max_time;
             this.priority = priority;
             this.order = order;
+            this.duration = min_time;
         }
 
         public long getId() {
@@ -66,6 +68,10 @@ public class DBHandler extends SQLiteOpenHelper {
         public double getMin_time() {
             return min_time;
         }
+
+        public double getDuration(){ return duration; }
+
+        public void setDuration(double d){ duration = d; }
 
         public void setMin_time(double min_time) {
             this.min_time = min_time;
@@ -94,6 +100,18 @@ public class DBHandler extends SQLiteOpenHelper {
         public void setOrder(double order) {
             this.order = order;
         }
+
+        @Override
+        public int compareTo(Task t){
+
+            if(priority < t.getPriority())
+                return -1;
+            else if(priority == t.getPriority())
+                return 0;
+
+            return 1;
+        }
+
     }
 
     public static class Day {
