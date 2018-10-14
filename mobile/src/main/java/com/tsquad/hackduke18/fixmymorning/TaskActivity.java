@@ -22,25 +22,23 @@ public class TaskActivity extends AppCompatActivity {
         tblLayout = (TableLayout) findViewById(R.id.tblLayout);
         tblLayout.setBackgroundColor(Color.LTGRAY);
 
-        //List<Task> taskList = new ArrayList<Task>();
-        //for (Task t : taskList){
+        List<Task> taskList = new ArrayList<Task>();
+        for (Task t : taskList) {
 
-          //  TableRow row = new TableRow(this);
+            TableRow row = new TableRow(this);
 
-            //TextView taskLabels = new TextView(this);
-            //taskLabels.setText(t.getName());
+            TextView taskLabels = new TextView(this);
+            taskLabels.setText(t.getName());
+            row.addView(taskLabels);
 
-        List<String> taskList = new ArrayList<>(Arrays.asList("a", "b", "c"));
-        for (String t : taskList){
+            TextView duration = new TextView(this);
+            if (t.getDuration()!=0)
+                duration.setText("" + t.getDuration());
+            else
+                duration.setText("X");
 
-        TableRow row = new TableRow(this);
 
-        TextView taskLabels = new TextView(this);
-        taskLabels.setText(t);
-        row.addView(taskLabels);
-
-        tblLayout.addView(row);
-
+            tblLayout.addView(row);
 
         }
 
