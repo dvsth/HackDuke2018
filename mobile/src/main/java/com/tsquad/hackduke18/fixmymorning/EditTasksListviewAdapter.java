@@ -14,6 +14,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 public class EditTasksListviewAdapter extends BaseAdapter {
 
@@ -28,14 +31,22 @@ public class EditTasksListviewAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        Task[] tasks = handler.GetTasks();
-        return tasks.length;
+        List<DBHandler.Task> tasks = handler.GetTasks();
+        return tasks.size();
     }
 
     @Override
-    public Task getItem(int position) {
-        Task[] tasks = handler.GetTasks();
-        return tasks[position];
+    public DBHandler.Task getItem(int position) {
+        List<DBHandler.Task> tasks = handler.GetTasks();
+        /*
+        Collections.sort(tasks, new Comparator<DBHandler.Task>() {
+            @Override
+            public int compare(DBHandler.Task o1, DBHandler.Task o2) {
+                return o1.getOrder() - o2.getOrder();
+            }
+        });
+        */
+        return tasks.get(position);
     }
 
     @Override
@@ -61,33 +72,36 @@ public class EditTasksListviewAdapter extends BaseAdapter {
             holder = (ViewHolder)convertView.getTag();
         }
 
-        Task[] tasks = handler.GetTasks();
-        Task task = tasks[position];
-        final Task task_to_edit = task;
+        List<DBHandler.Task> tasks = handler.GetTasks();
+        DBHandler.Task task = tasks.get(position);
+        final DBHandler.Task task_to_edit = task;
 
-        holder.text_description.setText(task.getName());
-        holder.text_time.setText("0:12-\n0:20");
-        holder.text_priority.setText("3");
+        holder.text_description.setText(task.getDescription());
+        holder.text_time.setText(String.format("%2d:%02d-\n%2d:%02d",
+                (int)(task.getMin_time() / 3600), (int)(task.getMin_time() / 60),
+                (int)(task.getMax_time() / 3600), (int)(task.getMax_time() / 60)));
+        holder.text_priority.setText(Integer.toString(task.getPriority()));
+
+        final BaseAdapter adapter = this;
 
         holder.button_edit.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
 
                 // Parameters to pass to activity
                 Bundle bundle = new Bundle();
-                bundle.putInt("id", task_to_edit.getId());
+                bundle.putLong("id", task_to_edit.getId());
 
                 Intent intent = new Intent(view.getContext(), EditTaskActivity.class);
                 intent.putExtras(bundle);
 
                 view.getContext().startActivity(intent);
+                adapter.notifyDataSetChanged();
             }
         });
 
-        final BaseAdapter adapter = this;
-
         holder.button_delete.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
-                handler.deleteTask(task_to_edit);
+                handler.DeleteTask(task_to_edit.getId());
                 adapter.notifyDataSetChanged();
             }
         });
