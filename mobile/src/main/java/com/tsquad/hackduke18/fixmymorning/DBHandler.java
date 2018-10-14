@@ -1,158 +1,163 @@
 package com.tsquad.hackduke18.fixmymorning;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.os.Environment;
-import android.util.Log;
-
-import java.io.File;
-import java.io.FileWriter;
-import java.io.PrintWriter;
-
-import static android.content.ContentValues.TAG;
-
-
 
 public class DBHandler extends SQLiteOpenHelper {
 
+    public class Task {
+        public static final String TABLE_NAME = "Tasks";
+        public static final String COLUMN_NAME_ID = "Id";
+        public static final String COLUMN_NAME_DESCRIPTION = "Description";
+        public static final String COLUMN_NAME_MIN_TIME = "MinTime";
+        public static final String COLUMN_NAME_MAX_TIME = "MaxTime";
+        public static final String COLUMN_NAME_PRIORITY = "Priority";
+        public static final String COLUMN_NAME_ORDER = "Order";
 
-    //database and table info
-    private static final int DATABASE_VERSION = 1;
-    private static final String DATABASE_NAME = "Schedule";
-    private static final String TABLE_RESPONSES = "Schedule";
-    //identifier - primary key
-    private static final String KEY_ID = "id";
+        public static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" +
+                COLUMN_NAME_ID + " INTEGER PRIMARY KEY," +
+                COLUMN_NAME_DESCRIPTION + " TEXT," +
+                COLUMN_NAME_MIN_TIME + " DOUBLE," +
+                COLUMN_NAME_MAX_TIME + " DOUBLE," +
+                COLUMN_NAME_PRIORITY + " INTEGER,`" +
+                COLUMN_NAME_ORDER + "` DOUBLE)";
 
-    //demographics
-    private static final String NAME = "TASK_NAME";
-    private static final String UPPER = "UL";
-    private static final String LOWER = "LL";
-    private static final String PRIORITY = "Priority";
-    private static final String ORDER1 = "Order";
-    private static final String DATE = "Date";
+        public static final String DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
 
+        private long id;
+        private String description;
+        private double min_time;
+        private double max_time;
+        private int priority;
+        private double order;
 
-    //create a reference to the database we are handling
-    private static SQLiteDatabase database;
-    private static int counter;
-    private static String[] QUESTION_ARRAY;
+        public Task(long id, String description, double min_time, double max_time, int priority, double order) {
+            this.id = id;
+            this.description = description;
+            this.min_time = min_time;
+            this.max_time = max_time;
+            this.priority = priority;
+            this.order = order;
+        }
 
-    //quelle heure est-il? wie viel uhr is es?
-    private String timestamp;
+        public long getId() {
+            return id;
+        }
 
+        public void setId(long id) {
+            this.id = id;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
+        public double getMin_time() {
+            return min_time;
+        }
+
+        public void setMin_time(double min_time) {
+            this.min_time = min_time;
+        }
+
+        public double getMax_time() {
+            return max_time;
+        }
+
+        public void setMax_time(double max_time) {
+            this.max_time = max_time;
+        }
+
+        public int getPriority() {
+            return priority;
+        }
+
+        public void setPriority(int priority) {
+            this.priority = priority;
+        }
+
+        public double getOrder() {
+            return order;
+        }
+
+        public void setOrder(double order) {
+            this.order = order;
+        }
+    }
+
+    public class Day {
+        public static final String TABLE_NAME = "Days";
+        public static final String COLUMN_NAME_DAY = "Day";
+        public static final String COLUMN_NAME_START_TIME = "StartTime";
+        public static final String COLUMN_NAME_END_TIME = "EndTime";
+
+        public static final String CREATE_TABLE = "CREATE TABLE " + TABLE_NAME + " (" +
+                "Id INTEGER PRIMARY KEY," +
+                COLUMN_NAME_DAY + " INTEGER," +
+                COLUMN_NAME_START_TIME + " DOUBLE," +
+                COLUMN_NAME_END_TIME + " DOUBLE)";
+
+        public static final String DROP_TABLE = "DROP TABLE IF EXISTS " + TABLE_NAME;
+
+        private int day;
+        private double start_time;
+        private double end_time;
+
+        public Day(int day, double start_time, double end_time) {
+            this.day = day;
+            this.start_time = start_time;
+            this.end_time = end_time;
+        }
+
+        public int getDay() {
+            return day;
+        }
+
+        public void setDay(int day) {
+            this.day = day;
+        }
+
+        public double getStart_time() {
+            return start_time;
+        }
+
+        public void setStart_time(double start_time) {
+            this.start_time = start_time;
+        }
+
+        public double getEnd_time() {
+            return end_time;
+        }
+
+        public void setEnd_time(double end_time) {
+            this.end_time = end_time;
+        }
+    }
+
+    public static final int DATABASE_VERSION = 1;
+    public static final String DATABASE_NAME = "FixMyMorning.db";
 
     public DBHandler(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
-
     }
 
-    // Creating Tables
-    @Override
     public void onCreate(SQLiteDatabase db) {
-
-
-        //set reference to database we are handling
-        database = db;
-
-        //starting the primary key field from 0;
-        counter = 0;
-
-        //create the table with relevant columns
-        String SCHEDULE_TABLE =
-                "CREATE TABLE IF NOT EXISTS " + TABLE_RESPONSES + "("
-                        + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + NAME + " TEXT,"
-                        + UPPER + " NUMERIC, " + LOWER + " NUMERIC, " + PRIORITY + " INTEGER, " + ORDER1 + "NUMERIC," + DATE + " TEXT " + ")";
-        database.execSQL(SCHEDULE_TABLE);
-
+        db.execSQL(Task.CREATE_TABLE);
+        db.execSQL(Day.CREATE_TABLE);
     }
 
-    @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // Drop older table if existed
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_RESPONSES);
-
-        // Create tables again
+    public void onUpgrade(SQLiteDatabase db, int old_version, int new_version) {
+        db.execSQL(Task.DROP_TABLE);
+        db.execSQL(Day.DROP_TABLE);
         onCreate(db);
     }
 
-
-    public Task[] getTask(SQLiteDatabase db) {
-
-        Cursor cursor = db.query(TABLE_RESPONSES, null, null, null, null, null, null);
-        int i = 0;
-        Task[] array = new Task[cursor.getCount()];
-        for (cursor.moveToFirst(); !cursor.isAfterLast(); cursor.moveToNext()) {
-            array[i] = new Task(
-                    cursor.getInt(0),
-                    cursor.getString(1),
-                    cursor.getFloat(2),
-                    cursor.getFloat(3),
-                    cursor.getFloat(4),
-                    cursor.getInt(5),
-                    cursor.getString(6));
-            i++;
-
-        }
-
-        return array;
-
+    public void onDowngrade(SQLiteDatabase db, int old_version, int new_version) {
+        onUpgrade(db, old_version, new_version);
     }
-
-    public void addSurveyResponse(String[] inputResponses) {
-
-        //initialize array containing all questions
-        QUESTION_ARRAY = new String[]{NAME, UPPER, LOWER, PRIORITY, ORDER1, DATE};
-
-        ContentValues values = new ContentValues();
-        for (int i = 0; i < 6; i++) {
-            values.put(QUESTION_ARRAY[i], inputResponses[i]);
-
-        }
-
-        getWritableDatabase().insert(TABLE_RESPONSES, null, values);
-
-        getWritableDatabase().close();
-
-    }
-
-    public int updateTask(Task task) {
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        ContentValues values = new ContentValues();
-        values.put(NAME, task.getName());
-        values.put(UPPER, task.getUpper());
-        values.put(LOWER, task.getLower());
-        values.put(PRIORITY, task.getPriority());
-        values.put(ORDER1, task.getOrder());
-        values.put(DATE, task.getDate());
-
-        // updating row
-        return db.update(TABLE_RESPONSES, values, KEY_ID + " = ?",
-                new String[]{String.valueOf(task.getId())});
-
-
-    }
-
-    public void deleteTask(Task task) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        db.delete(TABLE_RESPONSES, KEY_ID + " = ?",
-                new String[]{String.valueOf(task.getId())});
-        db.close();
-    }
-
-    public Task[] GetTasks() {
-        return getTask(database);
-    }
-
-    public Task GetTask(int id) {
-        Task[] tasks = getTask(database);
-        for (Task task : tasks) {
-            if (task.getId() == id) return task;
-        }
-        return null;
-    }
-
 }
