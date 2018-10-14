@@ -3,6 +3,7 @@ package com.tsquad.hackduke18.fixmymorning;
 import android.annotation.SuppressLint;
 import android.app.ListFragment;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
@@ -13,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -38,6 +40,26 @@ public class EditTasksFragment extends Fragment {
 
         ListView lv = (ListView)view.findViewById(R.id.listview);
         lv.setAdapter(new EditTasksListviewAdapter(getActivity()));
+
+        ImageButton button = (ImageButton)view.findViewById(R.id.new_task);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                DBHandler.Task task_to_edit = new DBHandler.Task(
+                        0, "New Task", 0, 0, 6,0);
+                long task_id = new DBHandler(getContext()).InsertTask(task_to_edit);
+
+                // Parameters to pass to activity
+                Bundle bundle = new Bundle();
+                bundle.putLong("id", task_id);
+
+                Intent intent = new Intent(view.getContext(), EditTaskActivity.class);
+                intent.putExtras(bundle);
+
+                view.getContext().startActivity(intent);
+            }
+        });
 
         return view;
     }

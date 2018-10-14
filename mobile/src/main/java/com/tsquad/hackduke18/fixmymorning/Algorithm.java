@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
+/*
 public class Algorithm {
 
     private double endtime;
@@ -125,3 +126,4 @@ public class Algorithm {
     }
 
 }
+*/
