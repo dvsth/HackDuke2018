@@ -39,6 +39,7 @@ public class EditTaskActivity extends AppCompatActivity {
         edit_min_time.setText(Integer.toString((int)t.getMin_time()));
         edit_max_time.setText(Integer.toString((int)t.getMax_time()));
         edit_priority.setSelection(t.getPriority() - 1);
+        final double order = t.getOrder() == 0 ? id : t.getOrder();
 
         Button button_save = (Button)findViewById(R.id.edit_done);
         button_save.setOnClickListener(new View.OnClickListener() {
@@ -47,10 +48,10 @@ public class EditTaskActivity extends AppCompatActivity {
                 DBHandler.Task task_to_update = new DBHandler.Task(
                         id,
                         edit_description.getText().toString(),
-                        Integer.parseInt(edit_min_time.getText().toString()),
-                        Integer.parseInt(edit_max_time.getText().toString()),
-                        0,
-                        edit_priority.getSelectedItemPosition() + 1
+                        Integer.parseInt(edit_min_time.getText().toString()) * 60,
+                        Integer.parseInt(edit_max_time.getText().toString()) * 60,
+                        edit_priority.getSelectedItemPosition() + 1,
+                        order
                         );
                 handler.DeleteTask(id);
                 handler.InsertTask(task_to_update);

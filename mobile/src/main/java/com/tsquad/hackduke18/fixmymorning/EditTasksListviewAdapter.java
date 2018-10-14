@@ -38,14 +38,6 @@ public class EditTasksListviewAdapter extends BaseAdapter {
     @Override
     public DBHandler.Task getItem(int position) {
         List<DBHandler.Task> tasks = handler.GetTasks();
-        /*
-        Collections.sort(tasks, new Comparator<DBHandler.Task>() {
-            @Override
-            public int compare(DBHandler.Task o1, DBHandler.Task o2) {
-                return o1.getOrder() - o2.getOrder();
-            }
-        });
-        */
         return tasks.get(position);
     }
 
@@ -76,7 +68,7 @@ public class EditTasksListviewAdapter extends BaseAdapter {
         DBHandler.Task task = tasks.get(position);
         final DBHandler.Task task_to_edit = task;
 
-        holder.text_description.setText(task.getDescription());
+        holder.text_description.setText(task.getDescription() + " (" + task.getOrder() + ")");
         holder.text_time.setText(String.format("%2d:%02d-\n%2d:%02d",
                 (int)(task.getMin_time() / 3600), (int)(task.getMin_time() / 60),
                 (int)(task.getMax_time() / 3600), (int)(task.getMax_time() / 60)));

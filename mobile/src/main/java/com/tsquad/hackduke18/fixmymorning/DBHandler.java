@@ -7,7 +7,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 
+import java.time.DayOfWeek;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class DBHandler extends SQLiteOpenHelper {
@@ -143,6 +146,10 @@ public class DBHandler extends SQLiteOpenHelper {
         public void setEnd_time(double end_time) {
             this.end_time = end_time;
         }
+
+        public double getDuration() {
+            return end_time - start_time;
+        }
     }
 
     public static final int DATABASE_VERSION = 2;
@@ -212,6 +219,13 @@ public class DBHandler extends SQLiteOpenHelper {
         }
         cursor.close();
 
+        Collections.sort(tasks, new Comparator<Task>() {
+            @Override
+            public int compare(DBHandler.Task o1, DBHandler.Task o2) {
+                return (int)((o1.getOrder() - o2.getOrder()) * 1000000000);
+            }
+        });
+
         return tasks;
     }
 
@@ -242,5 +256,52 @@ public class DBHandler extends SQLiteOpenHelper {
                 selection,
                 selection_args
         );
+    }
+
+    public long InsertDay(Day day) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(Day.COLUMN_NAME_DAY, day.getDay());
+        values.put(Day.COLUMN_NAME_START_TIME, day.getStart_time());
+        values.put(Day.COLUMN_NAME_END_TIME, day.getEnd_time());
+
+        long new_row_id = db.insert(
+                Day.TABLE_NAME,
+                null,
+                values);
+        return new_row_id;
+    }
+
+    /**
+     * @param code 0 = Monday, 6 = Sunday
+     * @return
+     */
+    public Day GetDay(int code) {
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String selection = Day.COLUMN_NAME_DAY + " = ?";
+        String[] selection_args = { String.format("%d", code) };
+        Cursor cursor = db.query(Day.TABLE_NAME,
+                null, null, null, null, null, null, null);
+
+        Day output = null;
+        if (cursor.moveToNext()) {
+            output = new Day(
+                    cursor.getInt(cursor.getColumnIndexOrThrow(Day.COLUMN_NAME_DAY)),
+                    cursor.getDouble(cursor.getColumnIndexOrThrow(Day.COLUMN_NAME_START_TIME)),
+                    cursor.getDouble(cursor.getColumnIndexOrThrow(Day.COLUMN_NAME_END_TIME)));
+        }
+        cursor.close();
+
+        return output;
+    }
+
+    public void DeleteDay(int code) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        String selection = Day.COLUMN_NAME_DAY + " = ?";
+        String[] selection_args = { String.format("%d", code) };
+        db.delete(Day.TABLE_NAME, selection, selection_args);
     }
 }

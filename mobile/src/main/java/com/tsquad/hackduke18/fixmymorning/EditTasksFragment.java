@@ -46,9 +46,11 @@ public class EditTasksFragment extends Fragment {
             @Override
             public void onClick(View view) {
 
+                DBHandler handler = new DBHandler(getContext());
+
                 DBHandler.Task task_to_edit = new DBHandler.Task(
                         0, "New Task", 0, 0, 6,0);
-                long task_id = new DBHandler(getContext()).InsertTask(task_to_edit);
+                long task_id = handler.InsertTask(task_to_edit);
 
                 // Parameters to pass to activity
                 Bundle bundle = new Bundle();
